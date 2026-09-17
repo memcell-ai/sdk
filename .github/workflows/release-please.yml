@@ -54,7 +54,7 @@ jobs:
       - name: Publish to npm
         run: |
           cd packages/typescript
-          npm publish --access public
+          npm publish --provenance --access public
       - name: the attestation is on the registry
         env:
           GH_TOKEN: ${{ github.token }}
