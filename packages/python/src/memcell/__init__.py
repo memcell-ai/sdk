@@ -17,7 +17,7 @@ from .models import (
 from .organization import AsyncOrganizationMemCell, OrganizationMemCell
 from .scoped import AsyncScopedMemCell, ScopedExecutionResult, ScopedMemCell
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 __all__ = [
     "AsyncMemCell",
