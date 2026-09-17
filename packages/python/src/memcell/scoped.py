@@ -1,4 +1,7 @@
-from typing import Any, Awaitable, Callable, Dict, Generic, List, Optional, TypeVar, Union
+import contextlib
+from collections.abc import Awaitable, Callable
+from typing import Any, Generic, TypeVar
+
 from pydantic import BaseModel
 
 from .models import (
@@ -29,7 +32,7 @@ class ScopedMemCell:
         self,
         client: Any,
         namespace: str,
-        subject: Optional[str] = None,
+        subject: str | None = None,
     ) -> None:
         self._client = client
         self.namespace = namespace
@@ -38,13 +41,13 @@ class ScopedMemCell:
     def recall(
         self,
         query: str,
-        subject: Optional[str] = None,
-        kind: Optional[Union[str, List[str]]] = None,
-        min_confidence: Optional[float] = None,
-        limit: Optional[int] = None,
-        tags: Optional[List[str]] = None,
+        subject: str | None = None,
+        kind: str | list[str] | None = None,
+        min_confidence: float | None = None,
+        limit: int | None = None,
+        tags: list[str] | None = None,
         format: str = "xml",
-        allow_provisional: Optional[bool] = None,
+        allow_provisional: bool | None = None,
     ) -> RecallResponse:
         return self._client.recall(
             query=query,
@@ -60,18 +63,18 @@ class ScopedMemCell:
 
     def remember(
         self,
-        title: Optional[str] = None,
-        context: Optional[str] = None,
-        example: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        subject: Optional[str] = None,
-        kind: Optional[str] = None,
-        status: Optional[str] = None,
-        confidence: Optional[float] = None,
-        expires_at: Optional[Any] = None,
-        raw: Optional[str] = None,
-        session_id: Optional[str] = None,
-        async_: Optional[bool] = None,
+        title: str | None = None,
+        context: str | None = None,
+        example: str | None = None,
+        tags: list[str] | None = None,
+        subject: str | None = None,
+        kind: str | None = None,
+        status: str | None = None,
+        confidence: float | None = None,
+        expires_at: Any | None = None,
+        raw: str | None = None,
+        session_id: str | None = None,
+        async_: bool | None = None,
     ) -> RememberResponse:
         return self._client.remember(
             title=title,
@@ -93,14 +96,14 @@ class ScopedMemCell:
         self,
         action_taken: str,
         outcome: OutcomeVerdict,
-        subject: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        recall_id: Optional[str] = None,
-        statement_id: Optional[str] = None,
+        subject: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        recall_id: str | None = None,
+        statement_id: str | None = None,
         auto_distill: bool = True,
-        async_: Optional[bool] = None,
+        async_: bool | None = None,
     ) -> ReportResponse:
         return self._client.report(
             action_taken=action_taken,
@@ -120,10 +123,10 @@ class ScopedMemCell:
         self,
         statement_id: str,
         outcome: OutcomeVerdict,
-        recall_id: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
+        recall_id: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
     ) -> FeedbackResponse:
         return self._client.feedback(
             statement_id=statement_id,
@@ -140,7 +143,7 @@ class ScopedMemCell:
         job_id: str,
         timeout_ms: int = 15000,
         poll_interval_ms: int = 250,
-        on_progress: Optional[Callable[[JobEvent], None]] = None,
+        on_progress: Callable[[JobEvent], None] | None = None,
     ) -> JobEvent:
         return self._client.wait_for_job(
             job_id=job_id,
@@ -153,10 +156,10 @@ class ScopedMemCell:
         self,
         action: str,
         fn: Callable[[ScopedExecutionContext], T],
-        subject: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        query: Optional[str] = None,
+        subject: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        query: str | None = None,
     ) -> ScopedExecutionResult[T]:
         target_subject = subject or self.default_subject
         recall = self.recall(query=query or action, subject=target_subject)
@@ -180,7 +183,7 @@ class ScopedMemCell:
             )
             return ScopedExecutionResult[T](result=result, report=report, recall=recall)
         except Exception as e:
-            try:
+            with contextlib.suppress(Exception):
                 self.report(
                     action_taken=action,
                     outcome="failed",
@@ -190,9 +193,7 @@ class ScopedMemCell:
                     external_ref=external_ref,
                     payload=payload,
                 )
-            except Exception:
-                pass
-            raise e
+            raise
 
 
 class AsyncScopedMemCell:
@@ -202,7 +203,7 @@ class AsyncScopedMemCell:
         self,
         client: Any,
         namespace: str,
-        subject: Optional[str] = None,
+        subject: str | None = None,
     ) -> None:
         self._client = client
         self.namespace = namespace
@@ -211,13 +212,13 @@ class AsyncScopedMemCell:
     async def recall(
         self,
         query: str,
-        subject: Optional[str] = None,
-        kind: Optional[Union[str, List[str]]] = None,
-        min_confidence: Optional[float] = None,
-        limit: Optional[int] = None,
-        tags: Optional[List[str]] = None,
+        subject: str | None = None,
+        kind: str | list[str] | None = None,
+        min_confidence: float | None = None,
+        limit: int | None = None,
+        tags: list[str] | None = None,
         format: str = "xml",
-        allow_provisional: Optional[bool] = None,
+        allow_provisional: bool | None = None,
     ) -> RecallResponse:
         return await self._client.recall(
             query=query,
@@ -233,18 +234,18 @@ class AsyncScopedMemCell:
 
     async def remember(
         self,
-        title: Optional[str] = None,
-        context: Optional[str] = None,
-        example: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        subject: Optional[str] = None,
-        kind: Optional[str] = None,
-        status: Optional[str] = None,
-        confidence: Optional[float] = None,
-        expires_at: Optional[Any] = None,
-        raw: Optional[str] = None,
-        session_id: Optional[str] = None,
-        async_: Optional[bool] = None,
+        title: str | None = None,
+        context: str | None = None,
+        example: str | None = None,
+        tags: list[str] | None = None,
+        subject: str | None = None,
+        kind: str | None = None,
+        status: str | None = None,
+        confidence: float | None = None,
+        expires_at: Any | None = None,
+        raw: str | None = None,
+        session_id: str | None = None,
+        async_: bool | None = None,
     ) -> RememberResponse:
         return await self._client.remember(
             title=title,
@@ -266,14 +267,14 @@ class AsyncScopedMemCell:
         self,
         action_taken: str,
         outcome: OutcomeVerdict,
-        subject: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        recall_id: Optional[str] = None,
-        statement_id: Optional[str] = None,
+        subject: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        recall_id: str | None = None,
+        statement_id: str | None = None,
         auto_distill: bool = True,
-        async_: Optional[bool] = None,
+        async_: bool | None = None,
     ) -> ReportResponse:
         return await self._client.report(
             action_taken=action_taken,
@@ -293,10 +294,10 @@ class AsyncScopedMemCell:
         self,
         statement_id: str,
         outcome: OutcomeVerdict,
-        recall_id: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
+        recall_id: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
     ) -> FeedbackResponse:
         return await self._client.feedback(
             statement_id=statement_id,
@@ -313,7 +314,7 @@ class AsyncScopedMemCell:
         job_id: str,
         timeout_ms: int = 15000,
         poll_interval_ms: int = 250,
-        on_progress: Optional[Callable[[JobEvent], None]] = None,
+        on_progress: Callable[[JobEvent], None] | None = None,
     ) -> JobEvent:
         return await self._client.wait_for_job(
             job_id=job_id,
@@ -325,11 +326,11 @@ class AsyncScopedMemCell:
     async def wrap_execution(
         self,
         action: str,
-        fn: Callable[[ScopedExecutionContext], Union[T, Awaitable[T]]],
-        subject: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        query: Optional[str] = None,
+        fn: Callable[[ScopedExecutionContext], T | Awaitable[T]],
+        subject: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        query: str | None = None,
     ) -> ScopedExecutionResult[T]:
         target_subject = subject or self.default_subject
         recall = await self.recall(query=query or action, subject=target_subject)
@@ -358,7 +359,7 @@ class AsyncScopedMemCell:
             )
             return ScopedExecutionResult[T](result=result, report=report, recall=recall)
         except Exception as e:
-            try:
+            with contextlib.suppress(Exception):
                 await self.report(
                     action_taken=action,
                     outcome="failed",
@@ -368,6 +369,4 @@ class AsyncScopedMemCell:
                     external_ref=external_ref,
                     payload=payload,
                 )
-            except Exception:
-                pass
-            raise e
+            raise

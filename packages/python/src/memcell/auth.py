@@ -1,5 +1,6 @@
 import time
-from typing import Any, Dict, Optional
+from typing import Any
+
 import httpx
 
 from .exceptions import MemCellError
@@ -11,11 +12,11 @@ class AuthManager:
     def __init__(
         self,
         base_url: str,
-        api_key: Optional[str] = None,
-        access_token: Optional[str] = None,
-        client_id: Optional[str] = None,
-        client_secret: Optional[str] = None,
-        scope: Optional[str] = None,
+        api_key: str | None = None,
+        access_token: str | None = None,
+        client_id: str | None = None,
+        client_secret: str | None = None,
+        scope: str | None = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
@@ -24,7 +25,7 @@ class AuthManager:
         self.client_secret = client_secret
         self.scope = scope
 
-        self._cached_token: Optional[str] = None
+        self._cached_token: str | None = None
         self._token_expires_at: float = 0.0
 
     def clear_cache(self) -> None:
@@ -32,7 +33,7 @@ class AuthManager:
         self._cached_token = None
         self._token_expires_at = 0.0
 
-    def get_authorization_header(self, client: Optional[httpx.Client] = None) -> Optional[str]:
+    def get_authorization_header(self, client: httpx.Client | None = None) -> str | None:
         """Synchronously resolves Authorization header value."""
         if self.api_key:
             return f"Bearer {self.api_key}"
@@ -68,7 +69,7 @@ class AuthManager:
                         f"OAuth M2M token exchange failed: HTTP {resp.status_code} {resp.text}",
                         status=resp.status_code,
                     )
-                payload: Dict[str, Any] = resp.json()
+                payload: dict[str, Any] = resp.json()
                 token = payload.get("access_token")
                 expires_in = payload.get("expires_in", 3600)
                 if not token:
@@ -84,8 +85,8 @@ class AuthManager:
         return None
 
     async def get_authorization_header_async(
-        self, client: Optional[httpx.AsyncClient] = None
-    ) -> Optional[str]:
+        self, client: httpx.AsyncClient | None = None
+    ) -> str | None:
         """Asynchronously resolves Authorization header value."""
         if self.api_key:
             return f"Bearer {self.api_key}"
@@ -120,7 +121,7 @@ class AuthManager:
                         f"OAuth M2M token exchange failed: HTTP {resp.status_code} {resp.text}",
                         status=resp.status_code,
                     )
-                payload: Dict[str, Any] = resp.json()
+                payload: dict[str, Any] = resp.json()
                 token = payload.get("access_token")
                 expires_in = payload.get("expires_in", 3600)
                 if not token:

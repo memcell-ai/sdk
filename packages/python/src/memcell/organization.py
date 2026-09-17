@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from .models import (
     FeedbackResponse,
@@ -16,13 +16,13 @@ class OrganizationMemCell:
         self._client = client
         self.org_slug = org_slug
 
-    def scope(self, project_slug: str, subject: Optional[str] = None) -> Any:
+    def scope(self, project_slug: str, subject: str | None = None) -> Any:
         from .scoped import ScopedMemCell
 
         namespace = f"{self.org_slug}/{project_slug}"
         return ScopedMemCell(self._client, namespace, subject=subject)
 
-    def _resolve_namespace(self, namespace: Optional[str]) -> str:
+    def _resolve_namespace(self, namespace: str | None) -> str:
         if not namespace:
             return self.org_slug
         if "/" in namespace:
@@ -32,14 +32,14 @@ class OrganizationMemCell:
     def recall(
         self,
         query: str,
-        namespace: Optional[str] = None,
-        subject: Optional[str] = None,
-        kind: Optional[Union[str, List[str]]] = None,
-        min_confidence: Optional[float] = None,
-        limit: Optional[int] = None,
-        tags: Optional[List[str]] = None,
+        namespace: str | None = None,
+        subject: str | None = None,
+        kind: str | list[str] | None = None,
+        min_confidence: float | None = None,
+        limit: int | None = None,
+        tags: list[str] | None = None,
         format: str = "xml",
-        allow_provisional: Optional[bool] = None,
+        allow_provisional: bool | None = None,
     ) -> RecallResponse:
         return self._client.recall(
             query=query,
@@ -55,19 +55,19 @@ class OrganizationMemCell:
 
     def remember(
         self,
-        title: Optional[str] = None,
-        context: Optional[str] = None,
-        example: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        subject: Optional[str] = None,
-        kind: Optional[str] = None,
-        status: Optional[str] = None,
-        confidence: Optional[float] = None,
-        expires_at: Optional[Any] = None,
-        raw: Optional[str] = None,
-        session_id: Optional[str] = None,
-        namespace: Optional[str] = None,
-        async_: Optional[bool] = None,
+        title: str | None = None,
+        context: str | None = None,
+        example: str | None = None,
+        tags: list[str] | None = None,
+        subject: str | None = None,
+        kind: str | None = None,
+        status: str | None = None,
+        confidence: float | None = None,
+        expires_at: Any | None = None,
+        raw: str | None = None,
+        session_id: str | None = None,
+        namespace: str | None = None,
+        async_: bool | None = None,
     ) -> RememberResponse:
         return self._client.remember(
             title=title,
@@ -89,15 +89,15 @@ class OrganizationMemCell:
         self,
         action_taken: str,
         outcome: OutcomeVerdict,
-        namespace: Optional[str] = None,
-        subject: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        recall_id: Optional[str] = None,
-        statement_id: Optional[str] = None,
+        namespace: str | None = None,
+        subject: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        recall_id: str | None = None,
+        statement_id: str | None = None,
         auto_distill: bool = True,
-        async_: Optional[bool] = None,
+        async_: bool | None = None,
     ) -> ReportResponse:
         return self._client.report(
             action_taken=action_taken,
@@ -117,11 +117,11 @@ class OrganizationMemCell:
         self,
         statement_id: str,
         outcome: OutcomeVerdict,
-        recall_id: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        namespace: Optional[str] = None,
+        recall_id: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        namespace: str | None = None,
     ) -> FeedbackResponse:
         return self._client.feedback(
             statement_id=statement_id,
@@ -141,13 +141,13 @@ class AsyncOrganizationMemCell:
         self._client = client
         self.org_slug = org_slug
 
-    def scope(self, project_slug: str, subject: Optional[str] = None) -> Any:
+    def scope(self, project_slug: str, subject: str | None = None) -> Any:
         from .scoped import AsyncScopedMemCell
 
         namespace = f"{self.org_slug}/{project_slug}"
         return AsyncScopedMemCell(self._client, namespace, subject=subject)
 
-    def _resolve_namespace(self, namespace: Optional[str]) -> str:
+    def _resolve_namespace(self, namespace: str | None) -> str:
         if not namespace:
             return self.org_slug
         if "/" in namespace:
@@ -157,14 +157,14 @@ class AsyncOrganizationMemCell:
     async def recall(
         self,
         query: str,
-        namespace: Optional[str] = None,
-        subject: Optional[str] = None,
-        kind: Optional[Union[str, List[str]]] = None,
-        min_confidence: Optional[float] = None,
-        limit: Optional[int] = None,
-        tags: Optional[List[str]] = None,
+        namespace: str | None = None,
+        subject: str | None = None,
+        kind: str | list[str] | None = None,
+        min_confidence: float | None = None,
+        limit: int | None = None,
+        tags: list[str] | None = None,
         format: str = "xml",
-        allow_provisional: Optional[bool] = None,
+        allow_provisional: bool | None = None,
     ) -> RecallResponse:
         return await self._client.recall(
             query=query,
@@ -180,19 +180,19 @@ class AsyncOrganizationMemCell:
 
     async def remember(
         self,
-        title: Optional[str] = None,
-        context: Optional[str] = None,
-        example: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        subject: Optional[str] = None,
-        kind: Optional[str] = None,
-        status: Optional[str] = None,
-        confidence: Optional[float] = None,
-        expires_at: Optional[Any] = None,
-        raw: Optional[str] = None,
-        session_id: Optional[str] = None,
-        namespace: Optional[str] = None,
-        async_: Optional[bool] = None,
+        title: str | None = None,
+        context: str | None = None,
+        example: str | None = None,
+        tags: list[str] | None = None,
+        subject: str | None = None,
+        kind: str | None = None,
+        status: str | None = None,
+        confidence: float | None = None,
+        expires_at: Any | None = None,
+        raw: str | None = None,
+        session_id: str | None = None,
+        namespace: str | None = None,
+        async_: bool | None = None,
     ) -> RememberResponse:
         return await self._client.remember(
             title=title,
@@ -214,15 +214,15 @@ class AsyncOrganizationMemCell:
         self,
         action_taken: str,
         outcome: OutcomeVerdict,
-        namespace: Optional[str] = None,
-        subject: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        recall_id: Optional[str] = None,
-        statement_id: Optional[str] = None,
+        namespace: str | None = None,
+        subject: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        recall_id: str | None = None,
+        statement_id: str | None = None,
         auto_distill: bool = True,
-        async_: Optional[bool] = None,
+        async_: bool | None = None,
     ) -> ReportResponse:
         return await self._client.report(
             action_taken=action_taken,
@@ -242,11 +242,11 @@ class AsyncOrganizationMemCell:
         self,
         statement_id: str,
         outcome: OutcomeVerdict,
-        recall_id: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        namespace: Optional[str] = None,
+        recall_id: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        namespace: str | None = None,
     ) -> FeedbackResponse:
         return await self._client.feedback(
             statement_id=statement_id,

@@ -3,7 +3,9 @@ import json
 import os
 import random
 import time
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
+
 import httpx
 
 from .auth import AuthManager
@@ -25,7 +27,7 @@ if TYPE_CHECKING:
 
 
 def _resolve_endpoint(
-    namespace: Optional[str],
+    namespace: str | None,
     action: str,
 ) -> str:
     if namespace and "/" in namespace:
@@ -34,7 +36,7 @@ def _resolve_endpoint(
     return f"/api/v1/{action}"
 
 
-def _parse_statement_item(data: Dict[str, Any]) -> StatementItem:
+def _parse_statement_item(data: dict[str, Any]) -> StatementItem:
     tags = data.get("tags") or []
     kind = data.get("kind", "reflex")
     status = data.get("status", "active")
@@ -69,13 +71,13 @@ class _OrganizationsNamespaceSync:
     def __init__(self, client: "MemCell") -> None:
         self._client = client
 
-    def list(self) -> List[OrganizationItem]:
+    def list(self) -> list[OrganizationItem]:
         resp = self._client._request("GET", "/api/v1/organizations")
         orgs = resp.get("organizations") or []
         return [OrganizationItem(**o) for o in orgs]
 
-    def create(self, name: str, slug: Optional[str] = None) -> OrganizationItem:
-        body: Dict[str, Any] = {"name": name}
+    def create(self, name: str, slug: str | None = None) -> OrganizationItem:
+        body: dict[str, Any] = {"name": name}
         if slug:
             body["slug"] = slug
         resp = self._client._request("POST", "/api/v1/organizations", json=body)
@@ -90,13 +92,13 @@ class _OrganizationsNamespaceAsync:
     def __init__(self, client: "AsyncMemCell") -> None:
         self._client = client
 
-    async def list(self) -> List[OrganizationItem]:
+    async def list(self) -> list[OrganizationItem]:
         resp = await self._client._request("GET", "/api/v1/organizations")
         orgs = resp.get("organizations") or []
         return [OrganizationItem(**o) for o in orgs]
 
-    async def create(self, name: str, slug: Optional[str] = None) -> OrganizationItem:
-        body: Dict[str, Any] = {"name": name}
+    async def create(self, name: str, slug: str | None = None) -> OrganizationItem:
+        body: dict[str, Any] = {"name": name}
         if slug:
             body["slug"] = slug
         resp = await self._client._request("POST", "/api/v1/organizations", json=body)
@@ -112,18 +114,18 @@ class MemCell:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        access_token: Optional[str] = None,
-        client_id: Optional[str] = None,
-        client_secret: Optional[str] = None,
-        scope: Optional[str] = None,
-        base_url: Optional[str] = None,
+        api_key: str | None = None,
+        access_token: str | None = None,
+        client_id: str | None = None,
+        client_secret: str | None = None,
+        scope: str | None = None,
+        base_url: str | None = None,
         max_retries: int = 3,
         initial_retry_delay_ms: int = 1000,
         max_retry_delay_ms: int = 15000,
-        on_rate_limit_warning: Optional[Callable[[str, httpx.Response], None]] = None,
+        on_rate_limit_warning: Callable[[str, httpx.Response], None] | None = None,
         timeout: float = 30.0,
-        http_client: Optional[httpx.Client] = None,
+        http_client: httpx.Client | None = None,
     ) -> None:
         base = base_url or os.environ.get("MEMCELL_BASE_URL", "https://api.memcell.io")
         self.base_url = base.rstrip("/")
@@ -160,12 +162,12 @@ class MemCell:
 
         return OrganizationMemCell(self, org_slug)
 
-    def scope(self, namespace: str, subject: Optional[str] = None) -> "ScopedMemCell":
+    def scope(self, namespace: str, subject: str | None = None) -> "ScopedMemCell":
         from .scoped import ScopedMemCell
 
         return ScopedMemCell(self, namespace, subject=subject)
 
-    def _request(self, method: str, path: str, **kwargs: Any) -> Dict[str, Any]:
+    def _request(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
         attempt = 0
         while True:
             headers = kwargs.pop("headers", {}) or {}
@@ -256,17 +258,17 @@ class MemCell:
     def recall(
         self,
         query: str,
-        namespace: Optional[str] = None,
-        subject: Optional[str] = None,
-        kind: Optional[Union[str, List[str]]] = None,
-        min_confidence: Optional[float] = None,
-        limit: Optional[int] = None,
-        tags: Optional[List[str]] = None,
+        namespace: str | None = None,
+        subject: str | None = None,
+        kind: str | list[str] | None = None,
+        min_confidence: float | None = None,
+        limit: int | None = None,
+        tags: list[str] | None = None,
         format: str = "xml",
-        allow_provisional: Optional[bool] = None,
+        allow_provisional: bool | None = None,
     ) -> RecallResponse:
         path = _resolve_endpoint(namespace, "recall")
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "query": query,
             "intent": query,
             "subject": subject,
@@ -295,22 +297,22 @@ class MemCell:
 
     def remember(
         self,
-        title: Optional[str] = None,
-        context: Optional[str] = None,
-        example: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        subject: Optional[str] = None,
-        kind: Optional[str] = None,
-        status: Optional[str] = None,
-        confidence: Optional[float] = None,
-        expires_at: Optional[Any] = None,
-        raw: Optional[str] = None,
-        session_id: Optional[str] = None,
-        namespace: Optional[str] = None,
-        async_: Optional[bool] = None,
+        title: str | None = None,
+        context: str | None = None,
+        example: str | None = None,
+        tags: list[str] | None = None,
+        subject: str | None = None,
+        kind: str | None = None,
+        status: str | None = None,
+        confidence: float | None = None,
+        expires_at: Any | None = None,
+        raw: str | None = None,
+        session_id: str | None = None,
+        namespace: str | None = None,
+        async_: bool | None = None,
     ) -> RememberResponse:
         path = _resolve_endpoint(namespace, "remember")
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "title": title,
             "context": context,
             "example": example,
@@ -352,18 +354,18 @@ class MemCell:
         self,
         action_taken: str,
         outcome: OutcomeVerdict,
-        namespace: Optional[str] = None,
-        subject: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        recall_id: Optional[str] = None,
-        statement_id: Optional[str] = None,
+        namespace: str | None = None,
+        subject: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        recall_id: str | None = None,
+        statement_id: str | None = None,
         auto_distill: bool = True,
-        async_: Optional[bool] = None,
+        async_: bool | None = None,
     ) -> ReportResponse:
         path = _resolve_endpoint(namespace, "report")
-        body: Dict[str, Any] = {
+        body: dict[str, Any] = {
             "action_taken": action_taken,
             "outcome": outcome,
             "subject": subject,
@@ -404,14 +406,14 @@ class MemCell:
         self,
         statement_id: str,
         outcome: OutcomeVerdict,
-        recall_id: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        namespace: Optional[str] = None,
+        recall_id: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        namespace: str | None = None,
     ) -> FeedbackResponse:
         path = _resolve_endpoint(namespace, "feedback")
-        body: Dict[str, Any] = {
+        body: dict[str, Any] = {
             "statement_id": statement_id,
             "recall_id": recall_id,
             "outcome": outcome,
@@ -433,7 +435,7 @@ class MemCell:
         job_id: str,
         timeout_ms: int = 15000,
         poll_interval_ms: int = 250,
-        on_progress: Optional[Callable[[JobEvent], None]] = None,
+        on_progress: Callable[[JobEvent], None] | None = None,
     ) -> JobEvent:
         start_time = time.time()
         timeout_sec = timeout_ms / 1000.0
@@ -499,18 +501,18 @@ class AsyncMemCell:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        access_token: Optional[str] = None,
-        client_id: Optional[str] = None,
-        client_secret: Optional[str] = None,
-        scope: Optional[str] = None,
-        base_url: Optional[str] = None,
+        api_key: str | None = None,
+        access_token: str | None = None,
+        client_id: str | None = None,
+        client_secret: str | None = None,
+        scope: str | None = None,
+        base_url: str | None = None,
         max_retries: int = 3,
         initial_retry_delay_ms: int = 1000,
         max_retry_delay_ms: int = 15000,
-        on_rate_limit_warning: Optional[Callable[[str, httpx.Response], None]] = None,
+        on_rate_limit_warning: Callable[[str, httpx.Response], None] | None = None,
         timeout: float = 30.0,
-        http_client: Optional[httpx.AsyncClient] = None,
+        http_client: httpx.AsyncClient | None = None,
     ) -> None:
         base = base_url or os.environ.get("MEMCELL_BASE_URL", "https://api.memcell.io")
         self.base_url = base.rstrip("/")
@@ -547,12 +549,12 @@ class AsyncMemCell:
 
         return AsyncOrganizationMemCell(self, org_slug)
 
-    def scope(self, namespace: str, subject: Optional[str] = None) -> "AsyncScopedMemCell":
+    def scope(self, namespace: str, subject: str | None = None) -> "AsyncScopedMemCell":
         from .scoped import AsyncScopedMemCell
 
         return AsyncScopedMemCell(self, namespace, subject=subject)
 
-    async def _request(self, method: str, path: str, **kwargs: Any) -> Dict[str, Any]:
+    async def _request(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
         attempt = 0
         while True:
             headers = kwargs.pop("headers", {}) or {}
@@ -643,17 +645,17 @@ class AsyncMemCell:
     async def recall(
         self,
         query: str,
-        namespace: Optional[str] = None,
-        subject: Optional[str] = None,
-        kind: Optional[Union[str, List[str]]] = None,
-        min_confidence: Optional[float] = None,
-        limit: Optional[int] = None,
-        tags: Optional[List[str]] = None,
+        namespace: str | None = None,
+        subject: str | None = None,
+        kind: str | list[str] | None = None,
+        min_confidence: float | None = None,
+        limit: int | None = None,
+        tags: list[str] | None = None,
         format: str = "xml",
-        allow_provisional: Optional[bool] = None,
+        allow_provisional: bool | None = None,
     ) -> RecallResponse:
         path = _resolve_endpoint(namespace, "recall")
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "query": query,
             "intent": query,
             "subject": subject,
@@ -682,22 +684,22 @@ class AsyncMemCell:
 
     async def remember(
         self,
-        title: Optional[str] = None,
-        context: Optional[str] = None,
-        example: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        subject: Optional[str] = None,
-        kind: Optional[str] = None,
-        status: Optional[str] = None,
-        confidence: Optional[float] = None,
-        expires_at: Optional[Any] = None,
-        raw: Optional[str] = None,
-        session_id: Optional[str] = None,
-        namespace: Optional[str] = None,
-        async_: Optional[bool] = None,
+        title: str | None = None,
+        context: str | None = None,
+        example: str | None = None,
+        tags: list[str] | None = None,
+        subject: str | None = None,
+        kind: str | None = None,
+        status: str | None = None,
+        confidence: float | None = None,
+        expires_at: Any | None = None,
+        raw: str | None = None,
+        session_id: str | None = None,
+        namespace: str | None = None,
+        async_: bool | None = None,
     ) -> RememberResponse:
         path = _resolve_endpoint(namespace, "remember")
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "title": title,
             "context": context,
             "example": example,
@@ -739,18 +741,18 @@ class AsyncMemCell:
         self,
         action_taken: str,
         outcome: OutcomeVerdict,
-        namespace: Optional[str] = None,
-        subject: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        recall_id: Optional[str] = None,
-        statement_id: Optional[str] = None,
+        namespace: str | None = None,
+        subject: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        recall_id: str | None = None,
+        statement_id: str | None = None,
         auto_distill: bool = True,
-        async_: Optional[bool] = None,
+        async_: bool | None = None,
     ) -> ReportResponse:
         path = _resolve_endpoint(namespace, "report")
-        body: Dict[str, Any] = {
+        body: dict[str, Any] = {
             "action_taken": action_taken,
             "outcome": outcome,
             "subject": subject,
@@ -791,14 +793,14 @@ class AsyncMemCell:
         self,
         statement_id: str,
         outcome: OutcomeVerdict,
-        recall_id: Optional[str] = None,
-        reason: Optional[str] = None,
-        external_ref: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        namespace: Optional[str] = None,
+        recall_id: str | None = None,
+        reason: str | None = None,
+        external_ref: str | None = None,
+        payload: dict[str, Any] | None = None,
+        namespace: str | None = None,
     ) -> FeedbackResponse:
         path = _resolve_endpoint(namespace, "feedback")
-        body: Dict[str, Any] = {
+        body: dict[str, Any] = {
             "statement_id": statement_id,
             "recall_id": recall_id,
             "outcome": outcome,
@@ -820,7 +822,7 @@ class AsyncMemCell:
         job_id: str,
         timeout_ms: int = 15000,
         poll_interval_ms: int = 250,
-        on_progress: Optional[Callable[[JobEvent], None]] = None,
+        on_progress: Callable[[JobEvent], None] | None = None,
     ) -> JobEvent:
         start_time = time.time()
         timeout_sec = timeout_ms / 1000.0

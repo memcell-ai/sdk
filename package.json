@@ -1,6 +1,7 @@
 {
   "name": "memcell-sdk-monorepo",
   "private": true,
+  "packageManager": "pnpm@10.18.0",
   "description": "Official MemCell client SDKs for TypeScript and Python",
   "scripts": {
     "build": "pnpm --filter \"@memcell/*\" run build",

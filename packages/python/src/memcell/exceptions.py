@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 
 class MemCellError(Exception):
@@ -8,8 +8,8 @@ class MemCellError(Exception):
         self,
         message: str,
         status: int = 0,
-        code: Optional[str] = None,
-        details: Optional[Any] = None,
+        code: str | None = None,
+        details: Any | None = None,
     ) -> None:
         super().__init__(message)
         self.message = message
@@ -22,16 +22,16 @@ class MemCellError(Exception):
 
 
 class RateLimitError(MemCellError):
-    """Exception thrown when an API request is rejected with HTTP 429 Too Many Requests per ADR 057."""
+    """Exception thrown when an API request is rejected with HTTP 429 per ADR 057."""
 
     def __init__(
         self,
         message: str,
-        door: Optional[str] = None,
-        limit: Optional[int] = None,
-        window_seconds: Optional[int] = None,
+        door: str | None = None,
+        limit: int | None = None,
+        window_seconds: int | None = None,
         retry_after: int = 1,
-        details: Optional[Any] = None,
+        details: Any | None = None,
     ) -> None:
         super().__init__(
             message=message,
@@ -47,5 +47,6 @@ class RateLimitError(MemCellError):
     def __repr__(self) -> str:
         return (
             f"RateLimitError(door={self.door!r}, limit={self.limit}, "
-            f"window_seconds={self.window_seconds}, retry_after={self.retry_after}, message={self.message!r})"
+            f"window_seconds={self.window_seconds}, retry_after={self.retry_after}, "
+            f"message={self.message!r})"
         )

@@ -12,7 +12,9 @@ def test_rate_limit_warning_header_interception():
             200,
             json={"recallId": "rec_warn", "statements": []},
             headers={
-                "RateLimit-Warning": '299 - "Approaching rate limit capacity (85% consumed in active window)"',
+                "RateLimit-Warning": (
+                    '299 - "Approaching rate limit capacity (85% consumed in active window)"'
+                ),
             },
         )
 
