@@ -1,0 +1,101 @@
+name: release-please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      typescript_released: ${{ steps.release.outputs['packages/typescript--release_created'] }}
+      python_released: ${{ steps.release.outputs['packages/python--release_created'] }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish-typescript:
+    needs: release-please
+    if: needs.release-please.outputs.typescript_released == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - name: npm that can speak OIDC
+        run: npm install -g 'npm@^11.5.1'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter "@memcell/sdk" run build
+      - name: Verify package output
+        run: |
+          set -euo pipefail
+          test -f packages/typescript/dist/index.js
+          test -f packages/typescript/dist/index.d.ts
+      - name: Publish to npm
+        run: |
+          cd packages/typescript
+          npm publish --access public
+      - name: the attestation is on the registry
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./packages/typescript/package.json').version")"
+          if [ "$(gh api "repos/${{ github.repository }}" --jq .private)" = "true" ]; then
+            echo "@memcell/sdk@$version has no provenance: the repository is private"
+            exit 0
+          fi
+          for i in $(seq 1 12); do
+            if curl -fsS "https://registry.npmjs.org/@memcell/sdk" \
+              | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const v=JSON.parse(d).versions['$version'];process.exit(v&&v.dist&&v.dist.attestations?0:1)})"; then
+              echo "@memcell/sdk@$version is attested"; exit 0
+            fi
+            sleep 5
+          done
+          echo "@memcell/sdk@$version has no provenance attestation" >&2
+          exit 1
+
+  publish-python:
+    needs: release-please
+    if: needs.release-please.outputs.python_released == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/memcell
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build distributions
+        run: |
+          python -m pip install --upgrade pip build
+          cd packages/python
+          python -m build
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: packages/python/dist/

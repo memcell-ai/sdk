@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
+  "packages": {
+    "packages/typescript": {
+      "release-type": "node",
+      "package-name": "@memcell/sdk",
+      "component": "typescript"
+    },
+    "packages/python": {
+      "release-type": "python",
+      "package-name": "memcell",
+      "component": "python"
+    }
+  }
+}
