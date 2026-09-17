@@ -1,0 +1,21 @@
+{
+  "name": "memcell-sdk-monorepo",
+  "private": true,
+  "packageManager": "pnpm@10.18.0",
+  "description": "Official MemCell client SDKs for TypeScript and Python",
+  "scripts": {
+    "build": "pnpm --filter \"@memcell/*\" run build",
+    "typecheck": "pnpm --filter \"@memcell/*\" run typecheck",
+    "test:ts": "pnpm --filter \"@memcell/*\" run test",
+    "test:py": "cd packages/python && pytest",
+    "test": "pnpm run test:ts && pnpm run test:py",
+    "format": "prettier --write \"packages/**/*.{ts,js,json,md}\" \"*.{json,md}\"",
+    "format:check": "prettier --check \"packages/**/*.{ts,js,json,md}\" \"*.{json,md}\"",
+    "lint:py": "cd packages/python && ruff check",
+    "lint": "pnpm run typecheck && pnpm run lint:py"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "typescript": "^5.9.3"
+  }
+}

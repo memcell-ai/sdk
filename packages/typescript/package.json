@@ -1,0 +1,54 @@
+{
+  "name": "@memcell/sdk",
+  "version": "0.0.0",
+  "description": "Official TypeScript and Node.js SDK for MemCell persistent memory and cognitive reasoning engine",
+  "keywords": [
+    "memcell",
+    "memory",
+    "ai-agent",
+    "llm",
+    "agentic",
+    "cognitive-memory",
+    "sdk"
+  ],
+  "homepage": "https://memcell.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/memcell-ai/sdk.git",
+    "directory": "packages/typescript"
+  },
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json --noEmit",
+    "test": "vitest run",
+    "format:check": "prettier --check \"{src,test}/**/*.ts\" \"*.{json,md}\"",
+    "format": "prettier --write \"{src,test}/**/*.ts\" \"*.{json,md}\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.8"
+  }
+}
