@@ -215,7 +215,13 @@ def test_statements_resource_sync():
             body = json.loads(request.content.decode("utf-8"))
             return httpx.Response(
                 201,
-                json={"statement": {"id": "stmt_new", "title": body["title"], "type": body.get("type", "directive")}},
+                json={
+                    "statement": {
+                        "id": "stmt_new",
+                        "title": body["title"],
+                        "type": body.get("type", "directive"),
+                    }
+                },
             )
         if u.endswith("/statements/stmt_new") and method == "GET":
             return httpx.Response(
@@ -250,7 +256,9 @@ def test_statements_resource_sync():
                 json={
                     "ok": True,
                     "sourceStatementId": "stmt_1",
-                    "adopted": [{"projectId": "p2", "statementId": "stmt_2", "alreadyExisted": False}],
+                    "adopted": [
+                        {"projectId": "p2", "statementId": "stmt_2", "alreadyExisted": False}
+                    ],
                 },
             )
         if u.endswith("/promote") and method == "POST":
@@ -341,7 +349,9 @@ def test_projects_resource_sync():
             return httpx.Response(
                 200,
                 json={
-                    "projects": [{"id": "p1", "name": "Core", "slug": "core", "visibility": "public"}],
+                    "projects": [
+                        {"id": "p1", "name": "Core", "slug": "core", "visibility": "public"}
+                    ],
                     "pagination": {"page": 1, "perPage": 30, "total": 1, "hasMore": False},
                 },
             )
@@ -350,7 +360,9 @@ def test_projects_resource_sync():
                 200,
                 json={
                     "owner": "acme",
-                    "projects": [{"id": "p2", "name": "Backend", "slug": "backend", "visibility": "private"}],
+                    "projects": [
+                        {"id": "p2", "name": "Backend", "slug": "backend", "visibility": "private"}
+                    ],
                     "pagination": {"page": 1, "perPage": 10, "total": 1, "hasMore": False},
                 },
             )
@@ -359,18 +371,37 @@ def test_projects_resource_sync():
                 201,
                 json={
                     "ok": True,
-                    "project": {"id": "p_new", "name": "New Project", "slug": "new-project", "visibility": "private"},
+                    "project": {
+                        "id": "p_new",
+                        "name": "New Project",
+                        "slug": "new-project",
+                        "visibility": "private",
+                    },
                 },
             )
         if u.endswith("/api/v1/acme/backend") and method == "GET":
             return httpx.Response(
                 200,
-                json={"project": {"id": "p1", "name": "Backend", "slug": "backend", "visibility": "private"}},
+                json={
+                    "project": {
+                        "id": "p1",
+                        "name": "Backend",
+                        "slug": "backend",
+                        "visibility": "private",
+                    }
+                },
             )
         if u.endswith("/api/v1/acme/backend") and method == "PATCH":
             return httpx.Response(
                 200,
-                json={"project": {"id": "p1", "name": "Backend V2", "slug": "backend", "visibility": "public"}},
+                json={
+                    "project": {
+                        "id": "p1",
+                        "name": "Backend V2",
+                        "slug": "backend",
+                        "visibility": "public",
+                    }
+                },
             )
         if u.endswith("/api/v1/acme/backend") and method == "DELETE":
             return httpx.Response(200, json={"ok": True})
@@ -408,7 +439,9 @@ async def test_projects_resource_async():
             return httpx.Response(
                 200,
                 json={
-                    "projects": [{"id": "p1", "name": "Core", "slug": "core", "visibility": "public"}],
+                    "projects": [
+                        {"id": "p1", "name": "Core", "slug": "core", "visibility": "public"}
+                    ],
                     "pagination": {"page": 1, "perPage": 30, "total": 1, "hasMore": False},
                 },
             )
@@ -430,19 +463,36 @@ def test_agents_resource_sync():
             return httpx.Response(
                 200,
                 json={
-                    "agents": [{"id": "ag_1", "name": "Agent Alpha", "slug": "agent-alpha", "status": "active"}],
+                    "agents": [
+                        {
+                            "id": "ag_1",
+                            "name": "Agent Alpha",
+                            "slug": "agent-alpha",
+                            "status": "active",
+                        }
+                    ],
                     "pagination": {"page": 1, "perPage": 30, "total": 1, "hasMore": False},
                 },
             )
         if u.endswith("/api/v1/acme/backend/agents") and method == "POST":
             return httpx.Response(
                 201,
-                json={"agent": {"id": "ag_2", "name": "Agent Beta", "slug": "agent-beta", "status": "active"}},
+                json={
+                    "agent": {
+                        "id": "ag_2",
+                        "name": "Agent Beta",
+                        "slug": "agent-beta",
+                        "status": "active",
+                    }
+                },
             )
         if u.endswith("/api/v1/acme/backend/agents/ag_1/keys") and method == "POST":
             return httpx.Response(
                 201,
-                json={"ok": True, "key": {"id": "k_1", "key": "mc_ag_secret", "preview": "mc_ag_123..."}},
+                json={
+                    "ok": True,
+                    "key": {"id": "k_1", "key": "mc_ag_secret", "preview": "mc_ag_123..."},
+                },
             )
         if u.endswith("/api/v1/acme/backend/agents/ag_1/keys/k_1") and method == "DELETE":
             return httpx.Response(200, json={"revoked": True})
@@ -474,7 +524,14 @@ def test_collaborators_resource_sync():
                 200,
                 json={
                     "collaborators": [
-                        {"id": "c1", "userId": "u1", "name": "Alice", "role": "write", "source": "direct", "inherited": False}
+                        {
+                            "id": "c1",
+                            "userId": "u1",
+                            "name": "Alice",
+                            "role": "write",
+                            "source": "direct",
+                            "inherited": False,
+                        }
                     ],
                     "pendingInvitations": [],
                     "pagination": {"page": 1, "perPage": 30, "total": 1, "hasMore": False},
@@ -483,7 +540,10 @@ def test_collaborators_resource_sync():
         if u.endswith("/api/v1/acme/backend/collaborators") and method == "POST":
             return httpx.Response(
                 201,
-                json={"ok": True, "invitation": {"id": "inv_1", "email": "bob@acme.com", "role": "read"}},
+                json={
+                    "ok": True,
+                    "invitation": {"id": "inv_1", "email": "bob@acme.com", "role": "read"},
+                },
             )
         if u.endswith("/api/v1/acme/backend/collaborators/u1") and method == "PATCH":
             return httpx.Response(200, json={"ok": True})
@@ -592,7 +652,14 @@ def test_account_resource_sync():
         if u.endswith("/api/v1/account/profile") and method == "GET":
             return httpx.Response(
                 200,
-                json={"profile": {"id": "u1", "email": "user@test.com", "name": "User One", "role": "member"}},
+                json={
+                    "profile": {
+                        "id": "u1",
+                        "email": "user@test.com",
+                        "name": "User One",
+                        "role": "member",
+                    }
+                },
             )
         if u.endswith("/api/v1/account/tokens") and method == "GET":
             return httpx.Response(
@@ -602,7 +669,15 @@ def test_account_resource_sync():
         if u.endswith("/api/v1/account/tokens") and method == "POST":
             return httpx.Response(
                 201,
-                json={"success": True, "token": {"id": "tok_2", "name": "New Token", "token": "mc_pat_secret", "preview": "mc_pat_456..."}},
+                json={
+                    "success": True,
+                    "token": {
+                        "id": "tok_2",
+                        "name": "New Token",
+                        "token": "mc_pat_secret",
+                        "preview": "mc_pat_456...",
+                    },
+                },
             )
         if u.endswith("/api/v1/account/tokens/tok_1") and method == "DELETE":
             return httpx.Response(200, json={"success": True})
@@ -634,17 +709,27 @@ def test_scoped_memcell_bound_namespaces():
         if "/statements" in u:
             return httpx.Response(
                 200,
-                json={"statements": [], "pagination": {"page": 1, "perPage": 30, "total": 0, "hasMore": False}},
+                json={
+                    "statements": [],
+                    "pagination": {"page": 1, "perPage": 30, "total": 0, "hasMore": False},
+                },
             )
         if "/agents" in u:
             return httpx.Response(
                 200,
-                json={"agents": [], "pagination": {"page": 1, "perPage": 30, "total": 0, "hasMore": False}},
+                json={
+                    "agents": [],
+                    "pagination": {"page": 1, "perPage": 30, "total": 0, "hasMore": False},
+                },
             )
         if "/collaborators" in u:
             return httpx.Response(
                 200,
-                json={"collaborators": [], "pendingInvitations": [], "pagination": {"page": 1, "perPage": 30, "total": 0, "hasMore": False}},
+                json={
+                    "collaborators": [],
+                    "pendingInvitations": [],
+                    "pagination": {"page": 1, "perPage": 30, "total": 0, "hasMore": False},
+                },
             )
         if "/scopes" in u:
             return httpx.Response(
@@ -664,4 +749,3 @@ def test_scoped_memcell_bound_namespaces():
 
     assert scopes[0].name == "common"
     assert all("/acme/backend/" in c for c in calls)
-

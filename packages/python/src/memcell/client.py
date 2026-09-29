@@ -335,9 +335,7 @@ class _StatementsNamespaceSync:
 
     def get(self, namespace: str, statement_id: str) -> StatementItem:
         owner, project = _parse_namespace(namespace)
-        resp = self._client._request(
-            "GET", f"/api/v1/{owner}/{project}/statements/{statement_id}"
-        )
+        resp = self._client._request("GET", f"/api/v1/{owner}/{project}/statements/{statement_id}")
         return _parse_statement_item(resp.get("statement", {}))
 
     def create(
@@ -432,9 +430,7 @@ class _StatementsNamespaceSync:
 
     def delete(self, namespace: str, statement_id: str) -> None:
         owner, project = _parse_namespace(namespace)
-        self._client._request(
-            "DELETE", f"/api/v1/{owner}/{project}/statements/{statement_id}"
-        )
+        self._client._request("DELETE", f"/api/v1/{owner}/{project}/statements/{statement_id}")
 
     def star(
         self, namespace: str, statement_id: str, starred: bool = True
@@ -579,9 +575,7 @@ class _ProjectsNamespaceSync:
                 "order": order,
             }
         )
-        resp = self._client._request(
-            "GET", f"/api/v1/{owner}/projects", params=params
-        )
+        resp = self._client._request("GET", f"/api/v1/{owner}/projects", params=params)
         raw_projects = resp.get("projects") or []
         items = [_parse_project_item(p) for p in raw_projects]
         pagination = _parse_pagination(resp.get("pagination", {}))
@@ -758,9 +752,7 @@ class _AgentsNamespaceSync:
 
     def create_key(self, namespace: str, agent_id: str) -> CreateAgentKeyResult:
         owner, project = _parse_namespace(namespace)
-        resp = self._client._request(
-            "POST", f"/api/v1/{owner}/{project}/agents/{agent_id}/keys"
-        )
+        resp = self._client._request("POST", f"/api/v1/{owner}/{project}/agents/{agent_id}/keys")
         return CreateAgentKeyResult(**resp.get("key", {}))
 
     def revoke_key(self, namespace: str, agent_id: str, key_id: str) -> None:
@@ -805,9 +797,7 @@ class _CollaboratorsNamespaceSync:
             pagination=pagination,
         )
 
-    def invite(
-        self, namespace: str, identifier: str, role: str = "read"
-    ) -> PendingInvitationItem:
+    def invite(self, namespace: str, identifier: str, role: str = "read") -> PendingInvitationItem:
         owner, project = _parse_namespace(namespace)
         resp = self._client._request(
             "POST",
@@ -960,9 +950,7 @@ class _OrganizationsNamespaceSync:
                 "order": order,
             }
         )
-        resp = self._client._request(
-            "GET", f"/api/v1/organizations/{slug}/members", params=params
-        )
+        resp = self._client._request("GET", f"/api/v1/organizations/{slug}/members", params=params)
         members = [_parse_org_member(m) for m in resp.get("members", [])]
         pagination = _parse_pagination(resp.get("pagination", {}))
         return PaginatedResult(items=members, pagination=pagination)
@@ -995,15 +983,11 @@ class _OrganizationsNamespaceSync:
         body: dict[str, Any] = {"email": email, "role": role}
         if team_id:
             body["teamId"] = team_id
-        resp = self._client._request(
-            "POST", f"/api/v1/organizations/{slug}/invitations", json=body
-        )
+        resp = self._client._request("POST", f"/api/v1/organizations/{slug}/invitations", json=body)
         return _parse_org_invitation(resp.get("invitation", {}))
 
     def revoke_invitation(self, slug: str, invitation_id: str) -> None:
-        self._client._request(
-            "DELETE", f"/api/v1/organizations/{slug}/invitations/{invitation_id}"
-        )
+        self._client._request("DELETE", f"/api/v1/organizations/{slug}/invitations/{invitation_id}")
 
 
 class _UsageNamespaceSync:
@@ -1035,9 +1019,7 @@ class _TokensNamespaceSync:
             for t in resp.get("tokens", [])
         ]
 
-    def create(
-        self, name: str, expires_in_days: int | None = None
-    ) -> CreatedPersonalTokenResult:
+    def create(self, name: str, expires_in_days: int | None = None) -> CreatedPersonalTokenResult:
         body: dict[str, Any] = {"name": name}
         if expires_in_days is not None:
             body["expiresInDays"] = expires_in_days
@@ -1299,9 +1281,7 @@ class _StatementsNamespaceAsync:
             star_count=int(resp.get("starCount", 0)),
         )
 
-    async def history(
-        self, namespace: str, statement_id: str
-    ) -> StatementHistoryResponse:
+    async def history(self, namespace: str, statement_id: str) -> StatementHistoryResponse:
         owner, project = _parse_namespace(namespace)
         resp = await self._client._request(
             "GET", f"/api/v1/{owner}/{project}/statements/{statement_id}/history"
@@ -1430,9 +1410,7 @@ class _ProjectsNamespaceAsync:
                 "order": order,
             }
         )
-        resp = await self._client._request(
-            "GET", f"/api/v1/{owner}/projects", params=params
-        )
+        resp = await self._client._request("GET", f"/api/v1/{owner}/projects", params=params)
         raw_projects = resp.get("projects") or []
         items = [_parse_project_item(p) for p in raw_projects]
         pagination = _parse_pagination(resp.get("pagination", {}))
@@ -1551,9 +1529,7 @@ class _AgentsNamespaceAsync:
 
     async def get(self, namespace: str, agent_id: str) -> AgentItem:
         owner, project = _parse_namespace(namespace)
-        resp = await self._client._request(
-            "GET", f"/api/v1/{owner}/{project}/agents/{agent_id}"
-        )
+        resp = await self._client._request("GET", f"/api/v1/{owner}/{project}/agents/{agent_id}")
         return _parse_agent_item(resp.get("agent", {}))
 
     async def create(
@@ -1609,9 +1585,7 @@ class _AgentsNamespaceAsync:
 
     async def delete(self, namespace: str, agent_id: str) -> None:
         owner, project = _parse_namespace(namespace)
-        await self._client._request(
-            "DELETE", f"/api/v1/{owner}/{project}/agents/{agent_id}"
-        )
+        await self._client._request("DELETE", f"/api/v1/{owner}/{project}/agents/{agent_id}")
 
     async def create_key(self, namespace: str, agent_id: str) -> CreateAgentKeyResult:
         owner, project = _parse_namespace(namespace)
@@ -1683,9 +1657,7 @@ class _CollaboratorsNamespaceAsync:
 
     async def remove(self, namespace: str, user_id: str) -> None:
         owner, project = _parse_namespace(namespace)
-        await self._client._request(
-            "DELETE", f"/api/v1/{owner}/{project}/collaborators/{user_id}"
-        )
+        await self._client._request("DELETE", f"/api/v1/{owner}/{project}/collaborators/{user_id}")
 
     async def revoke_invitation(self, namespace: str, invitation_id: str) -> None:
         owner, project = _parse_namespace(namespace)
@@ -1781,9 +1753,7 @@ class _OrganizationsNamespaceAsync:
             body["website"] = website
         if logo is not None:
             body["logo"] = logo
-        resp = await self._client._request(
-            "PATCH", f"/api/v1/organizations/{slug}", json=body
-        )
+        resp = await self._client._request("PATCH", f"/api/v1/organizations/{slug}", json=body)
         org = resp.get("organization", {})
         return OrganizationItem(
             id=org.get("id", ""),
@@ -1844,9 +1814,7 @@ class _OrganizationsNamespaceAsync:
         )
 
     async def list_invitations(self, slug: str) -> list[OrgInvitationItem]:
-        resp = await self._client._request(
-            "GET", f"/api/v1/organizations/{slug}/invitations"
-        )
+        resp = await self._client._request("GET", f"/api/v1/organizations/{slug}/invitations")
         return [_parse_org_invitation(i) for i in resp.get("invitations", [])]
 
     async def invite_member(
@@ -1957,9 +1925,7 @@ class _AccountNamespaceAsync:
             body["website"] = website
         if image is not None:
             body["image"] = image
-        resp = await self._client._request(
-            "PATCH", "/api/v1/account/profile", json=body
-        )
+        resp = await self._client._request("PATCH", "/api/v1/account/profile", json=body)
         prof = resp.get("profile", {})
         return AccountProfile(
             id=prof.get("id", ""),
@@ -2609,7 +2575,9 @@ class AsyncMemCell:
         if namespace and "/" not in namespace:
             payload["project"] = namespace
 
-        data = await self._request("POST", path, json={k: v for k, v in payload.items() if v is not None})
+        data = await self._request(
+            "POST", path, json={k: v for k, v in payload.items() if v is not None}
+        )
         raw_statements = data.get("statements") or data.get("results") or []
         statements = [_parse_statement_item(s) for s in raw_statements]
 
@@ -2668,7 +2636,9 @@ class AsyncMemCell:
         if namespace and "/" not in namespace:
             payload["project"] = namespace
 
-        data = await self._request("POST", path, json={k: v for k, v in payload.items() if v is not None})
+        data = await self._request(
+            "POST", path, json={k: v for k, v in payload.items() if v is not None}
+        )
 
         if data.get("accepted"):
             return RememberResponse(
