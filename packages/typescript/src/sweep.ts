@@ -14,14 +14,18 @@ export interface ConsolidateSweepResponse {
   phases: string[];
 }
 
-function parseNamespace(namespace: string | { owner: string; project: string }): {
+function parseNamespace(
+  namespace: string | { owner: string; project: string },
+): {
   owner: string;
   project: string;
 } {
   if (typeof namespace === "string") {
     const parts = namespace.split("/");
     if (parts.length !== 2 || !parts[0] || !parts[1]) {
-      throw new Error(`Invalid namespace '${namespace}'. Expected format: 'owner/project'`);
+      throw new Error(
+        `Invalid namespace '${namespace}'. Expected format: 'owner/project'`,
+      );
     }
     return { owner: parts[0], project: parts[1] };
   }

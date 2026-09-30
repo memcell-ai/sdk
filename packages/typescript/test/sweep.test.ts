@@ -20,7 +20,8 @@ describe("Sweep & Consolidation API (ADR 0075)", () => {
               ok: true,
               jobId: "job_sweep_test_123",
               status: "queued",
-              message: "Consolidation sweep job enqueued for background execution.",
+              message:
+                "Consolidation sweep job enqueued for background execution.",
               phases: [
                 "clustering",
                 "synthesizing",
