@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/memcell-ai/sdk/compare/python-v0.1.5...python-v0.1.6) (2026-10-03)
+
+
+### Features
+
+* **sdk:** add fleet, audit, insights, and teams client namespaces ([#12](https://github.com/memcell-ai/sdk/issues/12)) ([26bd39f](https://github.com/memcell-ai/sdk/commit/26bd39f01db95516bd4a4b53f533a31e5bf86ce0))
+
 ## [0.1.5](https://github.com/memcell-ai/sdk/compare/python-v0.1.4...python-v0.1.5) (2026-09-30)
 
 

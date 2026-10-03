@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/memcell-ai/sdk/compare/typescript-v1.3.0...typescript-v1.4.0) (2026-10-03)
+
+
+### Features
+
+* **sdk:** add fleet, audit, insights, and teams client namespaces ([#12](https://github.com/memcell-ai/sdk/issues/12)) ([26bd39f](https://github.com/memcell-ai/sdk/commit/26bd39f01db95516bd4a4b53f533a31e5bf86ce0))
+
 ## [1.3.0](https://github.com/memcell-ai/sdk/compare/typescript-v1.2.0...typescript-v1.3.0) (2026-09-30)
 
 
