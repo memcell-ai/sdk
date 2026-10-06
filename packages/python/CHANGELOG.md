@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.0](https://github.com/memcell-ai/sdk/compare/python-v0.1.5...python-v0.2.0) (2026-10-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* purge statements and projects in favor of memories and workspaces ([#16](https://github.com/memcell-ai/sdk/issues/16))
+
+### Features
+
+* add latest-version deletion and allVersions support ([#15](https://github.com/memcell-ai/sdk/issues/15)) ([c8662e5](https://github.com/memcell-ai/sdk/commit/c8662e50e864a08fe152a1fc909e0169682635db))
+* **sdk:** add fleet, audit, insights, and teams client namespaces ([#12](https://github.com/memcell-ai/sdk/issues/12)) ([26bd39f](https://github.com/memcell-ai/sdk/commit/26bd39f01db95516bd4a4b53f533a31e5bf86ce0))
+* **sdk:** epistemic triad, observation grounding, and memory relations ([#17](https://github.com/memcell-ai/sdk/issues/17)) ([eb843e9](https://github.com/memcell-ai/sdk/commit/eb843e946eb0ebe5730011b3f69a6041d31575f7))
+
+
+### Code Refactoring
+
+* purge statements and projects in favor of memories and workspaces ([#16](https://github.com/memcell-ai/sdk/issues/16)) ([b162809](https://github.com/memcell-ai/sdk/commit/b162809d8c54991cdc3217ce503c07a8798976cc))
+
 ## [0.1.5](https://github.com/memcell-ai/sdk/compare/python-v0.1.4...python-v0.1.5) (2026-09-30)
 
 

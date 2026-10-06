@@ -93,7 +93,7 @@ from .teams import (
     TeamMembersNamespace,
 )
 
-__version__ = "0.1.5"
+__version__ = "0.2.0"
 
 __all__ = [
     "MEMORY_SCOPES",
