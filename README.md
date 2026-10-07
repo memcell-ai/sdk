@@ -14,6 +14,15 @@
   <a href="https://memcell.ai/docs"><img src="https://img.shields.io/badge/docs-memcell.ai-blue" alt="Documentation" /></a>
 </p>
 
+> [!IMPORTANT]
+> **This repository has been merged into the unified [`memcell-ai/devkit`](https://github.com/memcell-ai/devkit) monorepo.**
+>
+> - **TypeScript SDK (`@memcell/sdk`)**: [`sdks/node`](https://github.com/memcell-ai/devkit/tree/main/sdks/node)
+> - **Python SDK (`memcell`)**: [`sdks/python`](https://github.com/memcell-ai/devkit/tree/main/sdks/python)
+> - **Developer CLI (`memcell`)**: [`cli`](https://github.com/memcell-ai/devkit/tree/main/cli)
+>
+> This repository is now archived and read-only.
+
 This monorepo houses the official client libraries for MemCell:
 
 | Language                 | Package                                 | Target                           | Package Link                                                                                                           |
